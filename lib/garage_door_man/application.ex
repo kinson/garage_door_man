@@ -10,22 +10,9 @@ defmodule GarageDoorMan.Application do
   @sleep_duration 1000
 
   def start(_type, _args) do
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: GarageDoorMan.Supervisor]
-
     Logger.debug("~~WELCOME TO GARAGE DOOR MAN~~")
 
-    children =
-      [
-        # Children for all targets
-        # Starts a worker by calling: GarageDoorMan.Worker.start_link(arg)
-        # {GarageDoorMan.Worker, arg},
-      ] ++ children(target())
-
     spawn(&check_distance_forever/0)
-
-    Supervisor.start_link(children, opts)
   end
 
   defp check_distance_forever() do
@@ -40,23 +27,6 @@ defmodule GarageDoorMan.Application do
 
     :timer.sleep(@sleep_duration)
     check_distance_loop(pid)
-  end
-
-  # List all child processes to be supervised
-  def children(:host) do
-    [
-      # Children that only run on the host
-      # Starts a worker by calling: GarageDoorMan.Worker.start_link(arg)
-      # {GarageDoorMan.Worker, arg},
-    ]
-  end
-
-  def children(_target) do
-    [
-      # Children for all targets except host
-      # Starts a worker by calling: GarageDoorMan.Worker.start_link(arg)
-      # {GarageDoorMan.Worker, arg},
-    ]
   end
 
   def target() do
