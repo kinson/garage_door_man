@@ -7,26 +7,17 @@ defmodule GarageDoorMan.Application do
 
   require Logger
 
-  @sleep_duration 1000
-
   def start(_type, _args) do
     Logger.debug("~~WELCOME TO GARAGE DOOR MAN~~")
 
-    spawn(&check_distance_forever/0)
-  end
+    opts = [strategy: :one_for_one, name: GarageDoorMan.Supervisor]
 
-  defp check_distance_forever() do
-    {:ok, pid} = Hcsr04.start_link(trigger: 18, echo: 23)
+    children = [
+      GarageDoorMan.Watcher,
+      GarageDoorMan.Reporter
+    ]
 
-    check_distance_loop(pid)
-  end
-
-  def check_distance_loop(pid) do
-    distance = Hcsr04.read(pid)
-    Logger.debug("~~~measured distance: #{distance}")
-
-    :timer.sleep(@sleep_duration)
-    check_distance_loop(pid)
+    Supervisor.start_link(children, opts)
   end
 
   def target() do
