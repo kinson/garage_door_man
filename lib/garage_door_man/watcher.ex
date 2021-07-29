@@ -1,6 +1,6 @@
 defmodule GarageDoorMan.Watcher.State do
-  @enforce_keys [:sensor_pid]
-  defstruct [:sensor_pid, readings: []]
+  @enforce_keys [:i2c_bus_name, :i2c_bus_addr, :sensor_in]
+  defstruct [:i2c_bus_name, :i2c_bus_addr, :sensor_in, :i2c_ref, i2c_bus_gain: 6144, readings: []]
 end
 
 defmodule GarageDoorMan.Watcher do
@@ -12,8 +12,8 @@ defmodule GarageDoorMan.Watcher do
 
   @read_interval :timer.seconds(1)
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+  def start_link(args) do
+    GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
   def gather_sensor_data do
@@ -21,19 +21,23 @@ defmodule GarageDoorMan.Watcher do
   end
 
   @impl true
-  def init(_) do
-    {:ok, pid} = Hcsr04.start_link(trigger: 18, echo: 23)
-
+  def init(args) do
     schedule_read()
 
-    state = %State{sensor_pid: pid}
+    state = %State{
+      i2c_bus_name: Keyword.get(args, :i2c_bus_name),
+      i2c_bus_addr: Keyword.get(args, :i2c_bus_addr),
+      sensor_in: Keyword.get(args, :sensor_in)
+    }
 
-    {:ok, state}
+    conn = %{i2c_ref: open_i2c_bus(state.i2c_bus_name)}
+
+    {:ok, Map.merge(state, conn)}
   end
 
   @impl true
-  def handle_info(:read_sensor, %State{readings: readings, sensor_pid: pid} = state) do
-    distance = Hcsr04.read(pid)
+  def handle_info(:read_sensor, %State{readings: readings} = state) do
+    distance = GarageDoorMan.SensorInterface.read_values(state)
 
     Logger.debug("read sensor: #{distance}")
 
@@ -50,7 +54,23 @@ defmodule GarageDoorMan.Watcher do
     {:reply, avg, %State{state | readings: []}}
   end
 
+  @impl true
+  def terminate(reason, state) do
+    GarageDoorMan.SensorInterface.terminate(state.i2c_ref)
+
+    Logger.debug(
+      "Sensor Interface terminate: reason='#{inspect(reason)}', state='#{inspect(state)}'"
+    )
+
+    state
+  end
+
   defp schedule_read() do
     Process.send_after(self(), :read_sensor, @read_interval)
+  end
+
+  defp open_i2c_bus(bus_name) do
+    {:ok, i2c_ref} = GarageDoorMan.SensorInterface.open_i2c_bus(bus_name)
+    i2c_ref
   end
 end
