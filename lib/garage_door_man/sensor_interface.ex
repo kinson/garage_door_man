@@ -27,7 +27,7 @@ defmodule GarageDoorMan.SensorInterface do
 
   def read_values(state) do
     {:ok, distance} =
-      ADS1115.read(state.i2c_ref, state.i2c_bus_addr, state.sensor_in, state.i2c_bus_gain)
+      ADS1115.read(state.i2c_ref, state.i2c_bus_addr, state.sensor_in)
 
     distance
   end
