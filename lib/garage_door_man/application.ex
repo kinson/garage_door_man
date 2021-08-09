@@ -15,7 +15,8 @@ defmodule GarageDoorMan.Application do
     children = [
       {GarageDoorMan.Watcher,
        [i2c_bus_name: "i2c-1", i2c_bus_addr: 0x48, sensor_in: {:ain0, :gnd}]},
-      GarageDoorMan.Reporter
+      GarageDoorMan.Reporter,
+      GarageDoorMan.Callibrator
     ]
 
     Supervisor.start_link(children, opts)

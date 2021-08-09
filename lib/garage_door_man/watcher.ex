@@ -50,8 +50,7 @@ defmodule GarageDoorMan.Watcher do
 
   @impl true
   def handle_call(:gather_sensor_data, _from, %State{readings: readings} = state) do
-    avg = Enum.sum(readings) / Enum.count(readings)
-    {:reply, avg, %State{state | readings: []}}
+    {:reply, readings, %State{state | readings: []}}
   end
 
   @impl true
