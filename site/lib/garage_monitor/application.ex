@@ -12,9 +12,10 @@ defmodule GarageMonitor.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: GarageMonitor.PubSub},
       # Start the Endpoint (http/https)
-      GarageMonitorWeb.Endpoint
+      GarageMonitorWeb.Endpoint,
       # Start a worker by calling: GarageMonitor.Worker.start_link(arg)
       # {GarageMonitor.Worker, arg}
+      GarageMonitor.CoatClosetServer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

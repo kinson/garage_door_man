@@ -21,7 +21,9 @@ defmodule GarageMonitorWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", GarageMonitorWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", GarageMonitorWeb do
+    pipe_through :api
+
+    post "/receive_data", SensorDataController, :create
+  end
 end
