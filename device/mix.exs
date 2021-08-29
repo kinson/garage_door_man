@@ -38,6 +38,8 @@ defmodule GarageDoorMan.MixProject do
       {:httpoison, "~> 1.8"},
       {:ads1115, "~> 0.1"},
       {:circuits_i2c, "~> 0.3"},
+      {:hackney, "~> 1.17"},
+      {:jason, "~> 1.2"},
 
       # Dependencies for all targets except :host
       {:nerves_runtime, "~> 0.11.3", targets: @all_targets},
