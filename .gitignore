@@ -17,3 +17,8 @@
 erl_crash.dump
 
 .DS_Store
+
+node_modules
+
+site/_build/
+site/deps/
