@@ -1,8 +1,8 @@
 <div class="mx-auto">
-  <%= for {_, {date, calibrated, value}} <- @data do %>
-      <div class="flex flex-row items-center justify-center bg-green-200 w-max mx-auto text-lg p-4">
+  <%= for {date, callibrated, value} <- @data do %>
+      <div class={"flex flex-row items-center justify-center #{background_color(value, callibrated)} w-max mx-auto my-3 text-lg p-4"}>
         <p class="mx-2"><%= date_label(date) %></p>
-        <p class="mx-2"><%= calibrated %></p>
+        <p class="mx-2"><%= callibrated %></p>
         <p class="mx-2"><%= value %></p>
       </div>
   <% end %>

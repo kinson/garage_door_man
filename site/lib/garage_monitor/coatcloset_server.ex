@@ -42,6 +42,16 @@ defmodule GarageMonitor.CoatClosetServer do
   def handle_call(:retrieve_data, _from, state) do
     data = :ets.tab2list(@table)
 
+    data =
+      data
+      |> Enum.map(fn {_, data} -> data end)
+      |> Enum.sort(&compare_dates/2)
+      |> Enum.take(20)
+
     {:reply, data, state}
+  end
+
+  defp compare_dates({da, _, _}, {db, _, _}) do
+    DateTime.compare(da, db) == :gt
   end
 end

@@ -3,7 +3,7 @@ defmodule GarageDoorMan.Messenger do
     body = Jason.encode!(%{calibrated: calibrated, value: interval_average})
 
     :hackney.post(
-      "http://192.168.86.27:4000/api/receive_data",
+      "http://192.168.86.30:4000/api/receive_data",
       ["Content-Type": "application/json"],
       body,
       []

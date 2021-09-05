@@ -39,7 +39,7 @@ defmodule GarageDoorMan.Watcher do
   def handle_info(:read_sensor, %State{readings: readings} = state) do
     distance = GarageDoorMan.SensorInterface.read_values(state)
 
-    Logger.debug("read sensor: #{distance}")
+    # Logger.debug("read sensor: #{distance}")
 
     new_readings = [distance | readings]
 

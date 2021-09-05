@@ -12,7 +12,8 @@ defmodule GarageDoorMan.Reporter do
   end
 
   def set_callibrated_value(value) do
-    GenServer.cast(GarageDoorMan.Reporter, {:set_callibrated_value, value})
+    rounded = Float.round(value)
+    GenServer.cast(GarageDoorMan.Reporter, {:set_callibrated_value, rounded})
   end
 
   @impl true
@@ -37,10 +38,14 @@ defmodule GarageDoorMan.Reporter do
     {:noreply, state}
   end
 
-  def handle_info(:gather_sensor_data, %GarageDoorMan.Reporter{callibrated_value: callibrated_value} = state) do
+  def handle_info(
+        :gather_sensor_data,
+        %GarageDoorMan.Reporter{callibrated_value: callibrated_value} = state
+      ) do
     readings = GarageDoorMan.Watcher.gather_sensor_data()
 
     average = Enum.sum(readings) / Enum.count(readings)
+    average = Float.round(average)
 
     Logger.debug("Average range reading: #{average}")
 
@@ -53,8 +58,12 @@ defmodule GarageDoorMan.Reporter do
 
   def send_data(average, callibrated) do
     case GarageDoorMan.Messenger.send_data(average, callibrated) do
-      {:error, _} -> Logger.warn("Failed to send data to host")
-      _ -> Logger.debug("Sent data to host :metal:")
+      {:error, error} ->
+        Logger.warn("Failed to send data to host")
+        Logger.debug(error)
+
+      _ ->
+        Logger.debug("Sent data to host :metal:")
     end
   end
 
