@@ -22,3 +22,5 @@ node_modules
 
 site/_build/
 site/deps/
+device/deps
+device/_build/
